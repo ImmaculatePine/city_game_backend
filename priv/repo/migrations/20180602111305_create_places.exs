@@ -8,6 +8,5 @@ defmodule CityGameBackend.Repo.Migrations.CreatePlaces do
 
       timestamps()
     end
-
   end
 end
