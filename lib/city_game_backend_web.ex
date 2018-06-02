@@ -28,8 +28,9 @@ defmodule CityGameBackendWeb do
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/city_game_backend_web/templates",
-                        namespace: CityGameBackendWeb
+      use Phoenix.View,
+        root: "lib/city_game_backend_web/templates",
+        namespace: CityGameBackendWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]

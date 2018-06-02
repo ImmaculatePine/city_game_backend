@@ -11,7 +11,7 @@ defmodule CityGameBackend.Application do
       # Start the Ecto repository
       supervisor(CityGameBackend.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(CityGameBackendWeb.Endpoint, []),
+      supervisor(CityGameBackendWeb.Endpoint, [])
       # Start your own worker by calling: CityGameBackend.Worker.start_link(arg1, arg2, arg3)
       # worker(CityGameBackend.Worker, [arg1, arg2, arg3]),
     ]
