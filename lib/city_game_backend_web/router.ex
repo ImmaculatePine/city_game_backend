@@ -7,5 +7,6 @@ defmodule CityGameBackendWeb.Router do
 
   scope "/api", CityGameBackendWeb do
     pipe_through(:api)
+    resources("/places", PlaceController, except: [:new, :edit])
   end
 end
