@@ -43,6 +43,8 @@ defmodule CityGameBackendWeb.Endpoint do
     signing_salt: "9FLPu741"
   )
 
+  plug(CORSPlug)
+
   plug(CityGameBackendWeb.Router)
 
   @doc """
