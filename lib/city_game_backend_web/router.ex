@@ -8,6 +8,9 @@ defmodule CityGameBackendWeb.Router do
   scope "/api", CityGameBackendWeb do
     pipe_through(:api)
     resources("/places", PlaceController, except: [:new, :edit])
-    resources("/games", GameController, except: [:new, :edit])
+
+    resources("/games", GameController, except: [:new, :edit]) do
+      resources("/waypoints", WaypointController, only: [:index, :create, :delete])
+    end
   end
 end

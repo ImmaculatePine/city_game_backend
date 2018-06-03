@@ -101,4 +101,73 @@ defmodule CityGameBackend.Games do
   def change_game(%Game{} = game) do
     Game.changeset(game, %{})
   end
+
+  alias CityGameBackend.Games.Waypoint
+
+  @doc """
+  Returns the list of waypoints of the selected game.
+
+  ## Examples
+
+      iex> list_waypoints(1)
+      [%Waypoint{}, ...]
+
+  """
+  def list_waypoints(game_id) do
+    from(
+      Waypoint,
+      where: [game_id: ^game_id]
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Gets a single waypoint.
+
+  Raises `Ecto.NoResultsError` if the Waypoint does not exist.
+
+  ## Examples
+
+      iex> get_waypoint!(123)
+      %Waypoint{}
+
+      iex> get_waypoint!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_waypoint!(id), do: Repo.get!(Waypoint, id)
+
+  @doc """
+  Creates a waypoint.
+
+  ## Examples
+
+      iex> create_waypoint(%{field: value})
+      {:ok, %Waypoint{}}
+
+      iex> create_waypoint(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_waypoint(attrs \\ %{}) do
+    %Waypoint{}
+    |> Waypoint.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Deletes a Waypoint.
+
+  ## Examples
+
+      iex> delete_waypoint(waypoint)
+      {:ok, %Waypoint{}}
+
+      iex> delete_waypoint(waypoint)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_waypoint(%Waypoint{} = waypoint) do
+    Repo.delete(waypoint)
+  end
 end
