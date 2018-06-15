@@ -18,9 +18,9 @@ defmodule CityGameBackendWeb.WaypointControllerTest do
   end
 
   describe "create waypoint" do
-    test "renders waypoint when data is valid", %{conn: conn} do
+    test "renders waypoint and preloaded place when data is valid", %{conn: conn} do
       %{id: game_id} = insert(:game_no_waypoints)
-      %{id: place_id} = insert(:place)
+      %{id: place_id, name: name, address: address} = insert(:place)
 
       conn =
         post(
@@ -29,7 +29,15 @@ defmodule CityGameBackendWeb.WaypointControllerTest do
           waypoint: %{position: 1, place_id: place_id}
         )
 
-      assert %{"id" => _, "position" => 1} = json_response(conn, 201)["data"]
+      assert %{
+               "id" => _,
+               "position" => 1,
+               "place" => %{
+                 "id" => ^place_id,
+                 "name" => ^name,
+                 "address" => ^address
+               }
+             } = json_response(conn, 201)["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do

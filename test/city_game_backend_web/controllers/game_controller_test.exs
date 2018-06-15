@@ -1,26 +1,58 @@
 defmodule CityGameBackendWeb.GameControllerTest do
+  import CityGameBackend.Factory
+
   use CityGameBackendWeb.ConnCase
 
-  alias CityGameBackend.Games
   alias CityGameBackend.Games.Game
 
   @create_attrs %{name: "some name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 
-  def fixture(:game) do
-    {:ok, game} = Games.create_game(@create_attrs)
-    game
-  end
-
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
   describe "index" do
-    test "lists all games", %{conn: conn} do
+    test "renders empty list when there are no games", %{conn: conn} do
       conn = get(conn, game_path(conn, :index))
       assert json_response(conn, 200)["data"] == []
+    end
+
+    test "lists all games", %{conn: conn} do
+      %{id: id, name: name} = insert(:game)
+      conn = get(conn, game_path(conn, :index))
+
+      assert json_response(conn, 200)["data"] == [%{"id" => id, "name" => name}]
+    end
+  end
+
+  describe "show" do
+    test "renders a game with a list of waypoints and places", %{conn: conn} do
+      {:ok, game: %{id: id, name: name}} = create_game(conn)
+      conn = get(conn, game_path(conn, :show, id))
+
+      assert %{
+               "id" => ^id,
+               "name" => ^name,
+               "waypoints" => [
+                 %{
+                   "id" => _,
+                   "position" => _,
+                   "place" => %{"id" => _, "name" => _, "address" => _}
+                 },
+                 %{
+                   "id" => _,
+                   "position" => _,
+                   "place" => %{"id" => _, "name" => _, "address" => _}
+                 },
+                 %{
+                   "id" => _,
+                   "position" => _,
+                   "place" => %{"id" => _, "name" => _, "address" => _}
+                 }
+               ]
+             } = json_response(conn, 200)["data"]
     end
   end
 
@@ -30,7 +62,12 @@ defmodule CityGameBackendWeb.GameControllerTest do
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, game_path(conn, :show, id))
-      assert json_response(conn, 200)["data"] == %{"id" => id, "name" => "some name"}
+
+      assert json_response(conn, 200)["data"] == %{
+               "id" => id,
+               "name" => "some name",
+               "waypoints" => []
+             }
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -47,7 +84,16 @@ defmodule CityGameBackendWeb.GameControllerTest do
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       conn = get(conn, game_path(conn, :show, id))
-      assert json_response(conn, 200)["data"] == %{"id" => id, "name" => "some updated name"}
+
+      assert %{
+               "id" => ^id,
+               "name" => "some updated name",
+               "waypoints" => [
+                 %{"id" => _, "place" => %{"id" => _}},
+                 %{"id" => _, "place" => %{"id" => _}},
+                 %{"id" => _, "place" => %{"id" => _}}
+               ]
+             } = json_response(conn, 200)["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn, game: game} do
@@ -70,7 +116,7 @@ defmodule CityGameBackendWeb.GameControllerTest do
   end
 
   defp create_game(_) do
-    game = fixture(:game)
+    game = insert(:game)
     {:ok, game: game}
   end
 end

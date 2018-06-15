@@ -4,70 +4,70 @@ defmodule CityGameBackend.GamesTest do
   use CityGameBackend.DataCase
 
   alias CityGameBackend.Games
+  alias CityGameBackend.Games.{Game, Waypoint}
+  alias CityGameBackend.Places.Place
 
   describe "games" do
-    alias CityGameBackend.Games.Game
-
-    @valid_attrs %{name: "some name"}
-    @update_attrs %{name: "some updated name"}
-    @invalid_attrs %{name: nil}
-
-    def game_fixture(attrs \\ %{}) do
-      {:ok, game} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Games.create_game()
-
-      game
+    test "list_games/0 returns all games without preloaded waypoints" do
+      %{id: id} = insert(:game)
+      assert [%{id: ^id, waypoints: %Ecto.Association.NotLoaded{}}] = Games.list_games()
     end
 
-    test "list_games/0 returns all games" do
-      game = game_fixture()
-      assert Games.list_games() == [game]
-    end
+    test "get_game!/1 returns the selected game with preloaded waypoints and places" do
+      %{id: id, name: name, waypoints: waypoints} = insert(:game)
 
-    test "get_game!/1 returns the game with given id" do
-      game = game_fixture()
-      assert Games.get_game!(game.id) == game
+      [%{id: waypoint_id, position: position, place: %{id: place_id}}, _, _] =
+        Enum.sort_by(waypoints, & &1.id)
+
+      assert %Game{id: ^id, name: ^name, waypoints: [waypoint, _, _]} = Games.get_game!(id)
+
+      assert %Waypoint{
+               id: ^waypoint_id,
+               game_id: ^id,
+               position: ^position,
+               place: %Place{id: ^place_id}
+             } = waypoint
     end
 
     test "create_game/1 with valid data creates a game" do
-      assert {:ok, %Game{} = game} = Games.create_game(@valid_attrs)
+      assert {:ok, %Game{} = game} = Games.create_game(%{name: "some name"})
       assert game.name == "some name"
     end
 
     test "create_game/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Games.create_game(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Games.create_game(%{name: nil})
     end
 
     test "update_game/2 with valid data updates the game" do
-      game = game_fixture()
-      assert {:ok, game} = Games.update_game(game, @update_attrs)
+      game = insert(:game)
+
+      assert {:ok, game} = Games.update_game(game, %{name: "some updated name"})
       assert %Game{} = game
       assert game.name == "some updated name"
     end
 
     test "update_game/2 with invalid data returns error changeset" do
-      game = game_fixture()
-      assert {:error, %Ecto.Changeset{}} = Games.update_game(game, @invalid_attrs)
-      assert game == Games.get_game!(game.id)
+      %{id: id, name: name} = game = insert(:game)
+
+      assert {:error, %Ecto.Changeset{}} = Games.update_game(game, %{name: nil})
+      assert %Game{name: ^name} = Games.get_game!(id)
     end
 
     test "delete_game/1 deletes the game" do
-      game = game_fixture()
+      game = insert(:game)
+
       assert {:ok, %Game{}} = Games.delete_game(game)
       assert_raise Ecto.NoResultsError, fn -> Games.get_game!(game.id) end
     end
 
     test "change_game/1 returns a game changeset" do
-      game = game_fixture()
+      game = insert(:game)
+
       assert %Ecto.Changeset{} = Games.change_game(game)
     end
   end
 
   describe "waypoints" do
-    alias CityGameBackend.Games.Waypoint
-
     test "list_waypoints/1 returns all waypoints of the game" do
       %{id: game_id, waypoints: waypoints} = insert(:game)
 

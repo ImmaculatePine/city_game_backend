@@ -22,7 +22,7 @@ defmodule CityGameBackend.Games do
   end
 
   @doc """
-  Gets a single game.
+  Gets a single game with a list of waypoints.
 
   Raises `Ecto.NoResultsError` if the Game does not exist.
 
@@ -35,7 +35,14 @@ defmodule CityGameBackend.Games do
       ** (Ecto.NoResultsError)
 
   """
-  def get_game!(id), do: Repo.get!(Game, id)
+  def get_game!(id) do
+    Game
+    |> where([game], game.id == ^id)
+    |> join(:left, [game], waypoints in assoc(game, :waypoints))
+    |> join(:left, [game, waypoints], places in assoc(waypoints, :place))
+    |> preload([game, waypoints, places], waypoints: {waypoints, [place: places]})
+    |> Repo.one!()
+  end
 
   @doc """
   Creates a game.
@@ -150,9 +157,12 @@ defmodule CityGameBackend.Games do
 
   """
   def create_waypoint(attrs \\ %{}) do
-    %Waypoint{}
-    |> Waypoint.changeset(attrs)
-    |> Repo.insert()
+    with {:ok, %Waypoint{} = waypoint} <-
+           %Waypoint{}
+           |> Waypoint.changeset(attrs)
+           |> Repo.insert() do
+      {:ok, Repo.preload(waypoint, :place)}
+    end
   end
 
   @doc """
