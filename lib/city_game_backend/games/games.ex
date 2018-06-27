@@ -58,7 +58,7 @@ defmodule CityGameBackend.Games do
   """
   def create_game(attrs \\ %{}) do
     %Game{}
-    |> Game.changeset(attrs)
+    |> Game.create_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -76,7 +76,7 @@ defmodule CityGameBackend.Games do
   """
   def update_game(%Game{} = game, attrs) do
     game
-    |> Game.changeset(attrs)
+    |> Game.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -94,19 +94,6 @@ defmodule CityGameBackend.Games do
   """
   def delete_game(%Game{} = game) do
     Repo.delete(game)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking game changes.
-
-  ## Examples
-
-      iex> change_game(game)
-      %Ecto.Changeset{source: %Game{}}
-
-  """
-  def change_game(%Game{} = game) do
-    Game.changeset(game, %{})
   end
 
   alias CityGameBackend.Games.Waypoint
@@ -159,7 +146,7 @@ defmodule CityGameBackend.Games do
   def create_waypoint(attrs \\ %{}) do
     with {:ok, %Waypoint{} = waypoint} <-
            %Waypoint{}
-           |> Waypoint.changeset(attrs)
+           |> Waypoint.create_changeset(attrs)
            |> Repo.insert() do
       {:ok, Repo.preload(waypoint, :place)}
     end

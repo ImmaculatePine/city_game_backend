@@ -14,12 +14,17 @@ defmodule CityGameBackend.Games.Waypoint do
     timestamps()
   end
 
-  @doc false
-  def changeset(waypoint, attrs) do
+  def create_changeset(waypoint, attrs) do
     waypoint
     |> cast(attrs, [:game_id, :place_id, :position])
     |> validate_required([:game_id, :place_id, :position])
     |> assoc_constraint(:game)
     |> assoc_constraint(:place)
+  end
+
+  def update_changeset(waypoint, attrs) do
+    waypoint
+    |> cast(attrs, [:position])
+    |> validate_required(:position)
   end
 end
