@@ -40,7 +40,11 @@ defmodule CityGameBackend.Games do
     |> where([game], game.id == ^id)
     |> join(:left, [game], waypoints in assoc(game, :waypoints))
     |> join(:left, [game, waypoints], places in assoc(waypoints, :place))
-    |> preload([game, waypoints, places], waypoints: {waypoints, [place: places]})
+    |> join(:left, [game, waypoints, places], geolocations in assoc(places, :geolocation))
+    |> preload(
+      [game, waypoints, places, geolocations],
+      waypoints: {waypoints, [place: {places, [geolocation: geolocations]}]}
+    )
     |> Repo.one!()
   end
 

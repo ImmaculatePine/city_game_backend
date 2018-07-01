@@ -40,6 +40,8 @@ defmodule CityGameBackend.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:cors_plug, "~> 1.5"},
+      {:httpoison, "~> 1.0"},
+      {:mock, "~> 0.3.0", only: :test},
       {:ex_machina, "~> 2.2", only: :test}
     ]
   end

@@ -22,8 +22,16 @@ defmodule CityGameBackend.Factory do
 
   def waypoint_factory do
     %CityGameBackend.Games.Waypoint{
-      position: sequence(:waypoint_position, & &1),
-      place: build(:place)
+      place: build(:place),
+      position: sequence(:waypoint_position, & &1)
+    }
+  end
+
+  def geolocation_factory do
+    %CityGameBackend.Maps.Geolocation{
+      place: build(:place),
+      lat: 52.413108,
+      lon: 16.9040789
     }
   end
 end

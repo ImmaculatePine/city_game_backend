@@ -1,6 +1,7 @@
 defmodule CityGameBackendWeb.PlaceView do
   use CityGameBackendWeb, :view
-  alias CityGameBackendWeb.PlaceView
+  alias CityGameBackendWeb.{PlaceView, GeolocationView}
+  alias Ecto.Association.NotLoaded
 
   def render("index.json", %{places: places}) do
     %{data: render_many(places, PlaceView, "place.json")}
@@ -11,6 +12,14 @@ defmodule CityGameBackendWeb.PlaceView do
   end
 
   def render("place.json", %{place: place}) do
-    %{id: place.id, name: place.name, address: place.address}
+    place
+    |> Map.take([:id, :name, :address])
+    |> maybe_add_geolocation(place)
+  end
+
+  defp maybe_add_geolocation(view, %{geolocation: %NotLoaded{}}), do: view
+
+  defp maybe_add_geolocation(view, %{geolocation: geolocation}) do
+    Map.put(view, :geolocation, render_one(geolocation, GeolocationView, "geolocation.json"))
   end
 end

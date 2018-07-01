@@ -34,7 +34,8 @@ defmodule CityGameBackendWeb.PlaceControllerTest do
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
                "address" => "some address",
-               "name" => "some name"
+               "name" => "some name",
+               "geolocation" => nil
              }
     end
 
@@ -56,7 +57,8 @@ defmodule CityGameBackendWeb.PlaceControllerTest do
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
                "address" => "some updated address",
-               "name" => "some updated name"
+               "name" => "some updated name",
+               "geolocation" => nil
              }
     end
 

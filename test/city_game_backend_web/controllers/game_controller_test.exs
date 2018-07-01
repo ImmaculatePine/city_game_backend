@@ -29,7 +29,9 @@ defmodule CityGameBackendWeb.GameControllerTest do
 
   describe "show" do
     test "renders a game with a list of waypoints and places", %{conn: conn} do
-      {:ok, game: %{id: id, name: name}} = create_game(conn)
+      {:ok, game: %{id: id, name: name, waypoints: waypoints}} = create_game(conn)
+      %{id: waypoint_id, position: position, place: %{id: place_id} = place} = hd(waypoints)
+      %{id: geolocation_id, lat: lat, lon: lon} = insert(:geolocation, place: place)
       conn = get(conn, game_path(conn, :show, id))
 
       assert %{
@@ -37,19 +39,28 @@ defmodule CityGameBackendWeb.GameControllerTest do
                "name" => ^name,
                "waypoints" => [
                  %{
-                   "id" => _,
-                   "position" => _,
-                   "place" => %{"id" => _, "name" => _, "address" => _}
+                   "id" => ^waypoint_id,
+                   "position" => ^position,
+                   "place" => %{
+                     "id" => ^place_id,
+                     "name" => _,
+                     "address" => _,
+                     "geolocation" => %{
+                       "id" => ^geolocation_id,
+                       "lat" => ^lat,
+                       "lon" => ^lon
+                     }
+                   }
                  },
                  %{
                    "id" => _,
                    "position" => _,
-                   "place" => %{"id" => _, "name" => _, "address" => _}
+                   "place" => %{"id" => _, "name" => _, "address" => _, "geolocation" => nil}
                  },
                  %{
                    "id" => _,
                    "position" => _,
-                   "place" => %{"id" => _, "name" => _, "address" => _}
+                   "place" => %{"id" => _, "name" => _, "address" => _, "geolocation" => nil}
                  }
                ]
              } = json_response(conn, 200)["data"]

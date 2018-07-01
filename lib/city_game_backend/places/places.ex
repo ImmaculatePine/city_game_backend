@@ -22,7 +22,7 @@ defmodule CityGameBackend.Places do
   end
 
   @doc """
-  Gets a single place.
+  Gets a single place with preloaded geolocation.
 
   Raises `Ecto.NoResultsError` if the Place does not exist.
 
@@ -35,7 +35,12 @@ defmodule CityGameBackend.Places do
       ** (Ecto.NoResultsError)
 
   """
-  def get_place!(id), do: Repo.get!(Place, id)
+  def get_place!(id) do
+    Place
+    |> where([place], place.id == ^id)
+    |> preload([:geolocation])
+    |> Repo.one!()
+  end
 
   @doc """
   Creates a place.

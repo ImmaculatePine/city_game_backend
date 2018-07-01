@@ -44,3 +44,5 @@ config :city_game_backend, CityGameBackend.Repo,
   database: "city_game_backend_dev",
   hostname: "localhost",
   pool_size: 10
+
+import_config "dev.secret.exs"
